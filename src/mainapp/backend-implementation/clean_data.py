@@ -17,7 +17,7 @@ if __name__ == "__main__":
 	raw_df = pd.read_excel("../data/government_dataset.xlsx", skiprows=2)
 	# Produce the clean df from raw df
 	clean_df = clean_dataframe(raw_df, col_names_to_clean)
-	# Drop the last row
+	# Drop the last row in df
 	clean_df = clean_df.loc[:clean_df.shape[0]-2, :]
 	# Strip the columns in df
 	for each_col in col_names_to_strip:
