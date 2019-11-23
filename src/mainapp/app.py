@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
 import os
+from backend.util import get_param_val
 
 app = Flask(__name__, static_url_path='')
 CORS(app)
@@ -28,10 +29,18 @@ def not_found(error):
 def server_error(error):
     return render_template('500.html'), 500
 
+#No Home path start with the map path
 @app.route('/')
 def go_home():
-	return render_template('index.html')
-	
+	return redirect('map', code=303)
+
+@app.route('/map')
+def base_map():
+	query = request.args.get('query')
+	city = request.args.get('city')
+
+	return "Value:"+str(get_param_val(query)) #render_template('index.html')
+
 
 # Set host to 0.0.0.0 so that it is accessible from 'outside the container'
 if __name__ == '__main__':
