@@ -21,6 +21,6 @@ if __name__ == "__main__":
 	clean_df = clean_df.loc[:clean_df.shape[0]-2, :]
 	# Strip the columns in df
 	for each_col in col_names_to_strip:
-    	clean_df[each_col] = clean_df[each_col].apply(strip_spaces)
+		clean_df[each_col] = clean_df[each_col].apply(strip_spaces)
 	# Write clean df onto CSV
 	clean_df.to_csv("../data/cleaned_government_data.csv", index=False)
