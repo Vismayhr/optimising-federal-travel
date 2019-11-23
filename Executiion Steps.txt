@@ -1,0 +1,13 @@
+Execution steps
+---------------
+Now that the application runs inside a docker container, the steps to run the application are:
+
+1. Install docker-ce from https://docs.docker.com/install/  (choose your OS on the left pane)
+
+2. Open a terminal/cmd prompt at the root of the project (i.e inside the 'src' folder)
+
+3. Run: docker build -t optimising-federal-travel .  (Don't forget the dot at the end)
+
+4. Run: docker run -p 1330:8001 optimising-federal-travel  (If port 1330 is taken up on your system, choose another value)
+
+5. On your browser, go to 127.0.0.1:1330 (or the port you selected instead of 1330). If you are using Dockertoolbox on Windows, go to 192.168.99.100:1330.
