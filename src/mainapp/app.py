@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
 import os
-from backend.util import get_param_val
+import json
+from backend.util import read_data
+from backend.constants import CONSTANT
 
 app = Flask(__name__, static_url_path='')
 CORS(app)
@@ -38,8 +40,14 @@ def go_home():
 def base_map():
 	query = request.args.get('query')
 	city = request.args.get('city')
+	month = request.args.get('month')
 
-	return "Value:"+str(get_param_val(query)) #render_template('index.html')
+	return read_data(query, city, month) #render_template('index.html')
+
+@app.route('/cities')
+def imp_cities():
+	return json.dumps(CONSTANT.IMP_CITIES)
+
 
 
 # Set host to 0.0.0.0 so that it is accessible from 'outside the container'
