@@ -41,6 +41,6 @@ class CONSTANT:
         "st john's" : "St John's"
     }
 
-    MODEL_PATH = "./mainapp/fe_models/fe_ohe_model.pkl"
+    MODEL_PATH = "./mainapp/models/model.pkl"
 
     MONTH_LIST = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
