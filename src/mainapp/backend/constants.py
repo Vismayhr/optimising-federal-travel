@@ -44,3 +44,5 @@ class CONSTANT:
     MODEL_PATH = "./mainapp/models/model.pkl"
 
     MONTH_LIST = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    OPTIMAL_DATE = [15, 11, 9, 10, 7, 8, 13, 14, 13, 9, 13, 17]

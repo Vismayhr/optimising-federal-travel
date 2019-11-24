@@ -84,7 +84,8 @@ def get_predictions():
 			"lowest_cost_month": months[lowest_month_index],
 			"highest_cost_month": months[highest_month_index]
 		},
-		"passenger_trends": passenger_trends
+		"passenger_trends": passenger_trends,
+		"optimal_time": CONSTANT.OPTIMAL_DATE[CONSTANT.MONTH_LIST.index(month)]
 	}
 # Set host to 0.0.0.0 so that it is accessible from 'outside the container'
 if __name__ == '__main__':
