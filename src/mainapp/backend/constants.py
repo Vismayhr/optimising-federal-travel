@@ -27,6 +27,8 @@ class CONSTANT:
 
     VISUALIZATION_FOLDER = './mainapp/data/visualisation_query_data/query'
 
+    EXTRA_FOLDER = './mainapp/data/visualisation_query_data/extra_details/query'
+
     IMP_CITIES = ['calgary','edmonton','fredericton','halifax','montreal','ottawa','quebec',
             'regina','saskatoon',"st john's",'thunder bay','toronto','vancouver','victoria','winnipeg','yellowknife']
 
@@ -39,6 +41,6 @@ class CONSTANT:
         "st john's" : "St John's"
     }
 
-    MODEL_PATH = "./mainapp/model/model.pkl"
+    MODEL_PATH = "./mainapp/fe_models/fe_ohe_model.pkl"
 
     MONTH_LIST = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]

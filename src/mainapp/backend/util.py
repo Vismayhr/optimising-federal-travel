@@ -1,6 +1,7 @@
 # Utilitiesprint(f"Starting the application...", flush=True)
 from backend.constants import CONSTANT
 import pandas as pd
+import pickle
 #Reads pickle into dataframe
 def read_pickle(file):
     return pd.read_pickle(file)
@@ -53,6 +54,7 @@ def parse_dataframe(file_path,city,month,latlng, format_code = 1):
                 city_data['latlng'] = getlatlng(row[col],latlng)
         city_list.append(city_data)
     response_dict['data'] = city_list
+    response_dict['extra'] = get_extra_data(format_code)
     return response_dict
 
 def read_data(query, latlng, city = None, month = None):
@@ -64,3 +66,12 @@ def read_data(query, latlng, city = None, month = None):
     folder_number = query_number % 10
     file_path = CONSTANT.VISUALIZATION_FOLDER + str(folder_number) + "/" + file_name
     return parse_dataframe(file_path,city,month, latlng, query_number)
+
+def get_extra_data(query_number):
+    if query_number == 15:
+        query_number = 7
+    elif query_number == 16:
+        query_number = 8
+    with open(CONSTANT.EXTRA_FOLDER+ str(query_number) +'.sav',"rb") as input_file:
+        data = pickle.load(input_file)
+        return data
