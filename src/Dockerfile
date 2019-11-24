@@ -14,7 +14,7 @@ COPY ./ ./app
 WORKDIR ./app
 
 # Install the python dependencies listed in requirements.txt
-#RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Expose Docker's port
 EXPOSE 8001:80

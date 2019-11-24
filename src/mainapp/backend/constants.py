@@ -30,9 +30,15 @@ class CONSTANT:
     IMP_CITIES = ['calgary','edmonton','fredericton','halifax','montreal','ottawa','quebec',
             'regina','saskatoon',"st john's",'thunder bay','toronto','vancouver','victoria','winnipeg','yellowknife']
 
-    LATLNG_FILE = './mainapp/data/coordinates.json'
+    LATLNG_FILE = './mainapp/data/city_coordinates.json'
+
+    PREDICTION_PAGE_QUERIES = './mainapp/data/prediction_page_queries/passengers_count_trend.sav'
 
     PROB_CITIES = {
         'ft mcmurray':'Ft McMurray',
         "st john's" : "St John's"
     }
+
+    MODEL_PATH = "./mainapp/model/model.pkl"
+
+    MONTH_LIST = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]

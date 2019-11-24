@@ -27,91 +27,9 @@ from xgboost import XGBRegressor
 from datetime import datetime
 
 
-# In[7]:
-
-
-clean_df = pd.read_csv("../data/cleaned_government_data.csv")
-
-
-# In[8]:
-
-
-clean_df.head(5)
-
-
-# ## Origin, Destination encoding
-
-# In[62]:
-
-
-geo = Nominatim()
-
-
-# In[63]:
-
-
-geo_farm = GeocodeFarm()
-
-
-# In[174]:
-
-
-cities=list(clean_df["From"].unique())
-cities.extend(list(clean_df["To"].unique()))
-
-
-# In[ ]:
-
-
-location_details = {}
-
-
-# In[170]:
-
-
-for each_city in cities:
-    try:
-        location = geo.geocode(each_city + ", Canada")
-    except:
-        try:
-            location = geo_farm.geocode(each_city + ", Canada")
-        except:
-            continue
-    try:
-        location_details[each_city] = {
-            "latitude": location[1][0],
-            "longitude": location[1][1]
-        }
-    except:
-        continue
-
-
-# In[172]:
-
-
-with open("../data/city_coordinates.json", "w") as f:
-    json.dump(location_details, f)
-
-
-# In[171]:
-
-
-clean_df[["From_lat","From_lon"]] = clean_df["From"].apply(lambda x: pd.Series([location_details[x]["latitude"],location_details[x]["longitude"]]))
-clean_df[["To_lat","To_lon"]] = clean_df["To"].apply(lambda x: pd.Series([location_details[x]["latitude"],location_details[x]["longitude"]]))
-
-
-# In[178]:
-
-
-clean_df.head(5)
-
-
-# In[238]:
-
-
 def load_coordinates():
     # Loading coords from JSON
-    with open("../data/coordinates.json") as f:
+    with open("./mainapp/data/city_coordinates.json") as f:
         coords = json.load(f)
     return coords
 
@@ -136,19 +54,6 @@ def convert_to_radians(clean_df, cols=None):
     # Converting degree to rads
     clean_df[cols] = np.radians(clean_df[cols])
     return clean_df
-
-
-# In[251]:
-
-
-clean_df = transform_coordinates(clean_df)
-clean_df = convert_to_radians(clean_df, cols=["From_lat", "From_lon", "To_lat", "To_lon"])
-
-
-# In[252]:
-
-
-clean_df.head(5)
 
 
 # ## Feature Engineering: Distance between origin and destination
@@ -176,25 +81,7 @@ def calculate_distance(clean_df):
     return clean_df
 
 
-# In[212]:
-
-
-clean_df = calculate_distance(clean_df)
-
-
-# In[253]:
-
-
-clean_df.head(5)
-
-
 # ## Major Class
-
-# In[31]:
-
-
-clean_df.groupby(["Major Class"])[["Sum of Net Tickets", "Sum of Total $"]].sum()['Sum of Total $']/clean_df.groupby(["Major Class"])[["Sum of Net Tickets", "Sum of Total $"]].sum()['Sum of Net Tickets']
-
 
 # ### Inference:
 # - Although First Class gives a very low mean price, it is logically the most expensive way to travel via air.
@@ -206,7 +93,7 @@ clean_df.groupby(["Major Class"])[["Sum of Net Tickets", "Sum of Total $"]].sum(
 
 
 def dump_fe_pkl(model, col_name):
-    with open(f"../fe_models/fe_{col_name}.pkl", "wb") as f:
+    with open(f"./mainapp/fe_models/fe_{col_name}.pkl", "wb") as f:
         pickle.dump(model, f)
 
 
@@ -214,7 +101,7 @@ def dump_fe_pkl(model, col_name):
 
 
 def load_fe_pkl(col_name):
-    with open(f"../fe_models/fe_{col_name}.pkl", "rb") as f:
+    with open(f"./mainapp/fe_models/fe_{col_name}.pkl", "rb") as f:
         model=pickle.load(f)
     return model
 
@@ -240,73 +127,14 @@ def custom_label_encode(clean_df, mappings):
     return clean_df
 
 
-# In[243]:
-
-
-mappings = {
-    "Major Class":{
-        "Economy": 1,
-        "Premium Economy": 2,
-        "Business Class": 3,
-        "First Class": 4
-    }
-}
-clean_df = custom_label_encode(clean_df, mappings)
-
-
-# In[254]:
-
-
-clean_df.head(5)
-
-
-# In[271]:
-
 
 def reorder_cols(clean_df, col_order=[]):
     return clean_df[col_order]
-
-
-# In[272]:
-
-
-clean_df.columns
-
-
-# In[273]:
-
-
-clean_df = reorder_cols(clean_df, col_order=['Major Class', 'Month of Travel Date', 'Sum of Net Tickets', 'From_lat', 'From_lon', 'To_lat', 'To_lon',
-       'distance', 'Sum of Total $'])
-
-
-# In[275]:
-
-
-clean_df.head(5)
-
-
-# In[375]:
-
 
 def compute_avg_price(clean_df):
     clean_df["price"] = clean_df["Sum of Total $"]/clean_df["Sum of Net Tickets"]
     clean_df.drop(["Sum of Total $", "Sum of Net Tickets"], axis=1, inplace=True)
     return clean_df
-
-
-# In[376]:
-
-
-clean_df = compute_avg_price(clean_df)
-
-
-# ## Month of Travel Date
-
-# In[23]:
-
-
-clean_df.groupby(["Month of Travel Date"])[["Sum of Net Tickets", "Sum of Total $"]].describe()
 
 
 # ### Inference:
@@ -332,8 +160,6 @@ def ohe_encode(clean_df, categories=None, use_pre_trained=False):
 
 # In[423]:
 
-
-X, y = ohe_encode(clean_df, categories=["Month of Travel Date"])
 
 """
 # ## Cross Validation for model selection
@@ -394,6 +220,14 @@ with open("../trained_models/model.pkl", "wb") as f:
 
 
 def preprocessing(clean_df):
+    mappings = {
+        "Major Class":{
+            "Economy": 1,
+            "Premium Economy": 2,
+            "Business Class": 3,
+            "First Class": 4
+        }
+    }
     # Transforming "From" and "To" destinations to coordinates
     clean_df = transform_coordinates(clean_df)
     # Transforming coordinates to radians
@@ -410,29 +244,197 @@ def preprocessing(clean_df):
 # In[493]:
 
 
-sample = pd.DataFrame([["Vancouver","Halifax","Economy","Dec"]], columns=["From", "To", "Major Class", "Month of Travel Date"])
+#sample = pd.DataFrame([["Vancouver","Halifax","Economy","Dec"]], columns=["From", "To", "Major Class", "Month of Travel Date"])
 
 
 # In[494]:
 
 
-sample=preprocessing(sample)
+#sample=preprocessing(sample)
+
+def make_df(origin, destination, majorclass, months):
+    data = []
+    for month in months:
+        data.append([origin, destination, majorclass, month])
+    columns = ["From", "To", "Major Class", "Month of Travel Date"]
+    return pd.DataFrame(data, columns=columns)
+
+def main():
+    # In[7]:
 
 
-# In[495]:
+    clean_df = pd.read_csv("../data/cleaned_government_data.csv")
 
 
-sample
+    # In[8]:
 
 
-# In[496]:
+    clean_df.head(5)
 
 
-grid_search_result.best_estimator_.predict(sample)
+    # ## Origin, Destination encoding
+
+    # In[62]:
 
 
-# In[ ]:
+    geo = Nominatim()
 
 
+    # In[63]:
+
+
+    geo_farm = GeocodeFarm()
+
+
+    # In[174]:
+
+
+    cities=list(clean_df["From"].unique())
+    cities.extend(list(clean_df["To"].unique()))
+
+
+    # In[ ]:
+
+
+    location_details = {}
+
+
+    # In[170]:
+
+
+    for each_city in cities:
+        try:
+            location = geo.geocode(each_city + ", Canada")
+        except:
+            try:
+                location = geo_farm.geocode(each_city + ", Canada")
+            except:
+                continue
+        try:
+            location_details[each_city] = {
+                "latitude": location[1][0],
+                "longitude": location[1][1]
+            }
+        except:
+            continue
+
+
+    # In[172]:
+
+
+    with open("../data/city_coordinates.json", "w") as f:
+        json.dump(location_details, f)
+
+
+    # In[171]:
+
+
+    clean_df[["From_lat","From_lon"]] = clean_df["From"].apply(lambda x: pd.Series([location_details[x]["latitude"],location_details[x]["longitude"]]))
+    clean_df[["To_lat","To_lon"]] = clean_df["To"].apply(lambda x: pd.Series([location_details[x]["latitude"],location_details[x]["longitude"]]))
+
+
+    # In[178]:
+
+
+    clean_df.head(5)
+
+    clean_df = transform_coordinates(clean_df)
+    clean_df = convert_to_radians(clean_df, cols=["From_lat", "From_lon", "To_lat", "To_lon"])
+
+
+    # In[252]:
+
+
+    clean_df.head(5)
+
+    # In[31]:
+    # In[212]:
+
+
+    clean_df = calculate_distance(clean_df)
+
+
+    # In[253]:
+
+
+    clean_df.head(5)
+
+
+
+
+    clean_df.groupby(["Major Class"])[["Sum of Net Tickets", "Sum of Total $"]].sum()['Sum of Total $']/clean_df.groupby(["Major Class"])[["Sum of Net Tickets", "Sum of Total $"]].sum()['Sum of Net Tickets']
+
+
+
+    # In[243]:
+
+
+    mappings = {
+        "Major Class":{
+            "Economy": 1,
+            "Premium Economy": 2,
+            "Business Class": 3,
+            "First Class": 4
+        }
+    }
+    clean_df = custom_label_encode(clean_df, mappings)
+
+
+    # In[254]:
+
+
+    clean_df.head(5)
+
+
+    # In[271]:
+
+
+    # In[272]:
+
+
+    clean_df.columns
+
+
+    # In[273]:
+
+
+    clean_df = reorder_cols(clean_df, col_order=['Major Class', 'Month of Travel Date', 'Sum of Net Tickets', 'From_lat', 'From_lon', 'To_lat', 'To_lon',
+           'distance', 'Sum of Total $'])
+
+
+    # In[275]:
+
+
+    clean_df.head(5)
+
+
+    # In[375]:
+
+
+
+    # In[376]:
+
+
+    clean_df = compute_avg_price(clean_df)
+
+
+    # ## Month of Travel Date
+
+    # In[23]:
+
+
+    clean_df.groupby(["Month of Travel Date"])[["Sum of Net Tickets", "Sum of Total $"]].describe()
+
+
+    X, y = ohe_encode(clean_df, categories=["Month of Travel Date"])
+
+
+
+    # In[238]:
+
+
+    # In[251]:
+if __name__ == "__main__":
+    main()
 
 
