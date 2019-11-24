@@ -25,12 +25,12 @@ class CONSTANT:
         '12': 'dec'
     }
 
-    VISUALIZATION_FOLDER = 'data/visualisation_query_data/query'
+    VISUALIZATION_FOLDER = './mainapp/data/visualisation_query_data/query'
 
     IMP_CITIES = ['calgary','edmonton','fredericton','halifax','montreal','ottawa','quebec',
             'regina','saskatoon',"st john's",'thunder bay','toronto','vancouver','victoria','winnipeg','yellowknife']
 
-    LATLNG_FILE = 'data/coordinates.json'
+    LATLNG_FILE = './mainapp/data/coordinates.json'
 
     PROB_CITIES = {
         'ft mcmurray':'Ft McMurray',
