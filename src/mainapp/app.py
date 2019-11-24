@@ -8,12 +8,16 @@ from backend.constants import CONSTANT
 app = Flask(__name__, static_url_path='')
 CORS(app)
 
-
+latlng = None
 # Load the datasets before the very first user request and have it available during the entire lifespan of the application.
 # Hence, time taken for file I/O is reduced as the csv files (i.e datasets) are only read once and not for every user request.
 @app.before_first_request
 def load_datasets():
-	print(f"Starting the application...", flush=True)
+	print(f"Loading Global Variables....", flush=True)
+	global latlng
+	with open(CONSTANT.LATLNG_FILE) as latlng_file:
+		latlng = json.load(latlng_file)
+	print(f"Loading Successful....", flush=True)
 
 
 @app.route('/init', methods=['GET'])
@@ -41,8 +45,7 @@ def base_map():
 	query = request.args.get('query')
 	city = request.args.get('city')
 	month = request.args.get('month')
-
-	return read_data(query, city, month) #render_template('index.html')
+	return read_data(query, latlng, city, month) #render_template('index.html')
 
 @app.route('/cities')
 def imp_cities():
