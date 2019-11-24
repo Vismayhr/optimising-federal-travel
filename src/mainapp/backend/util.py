@@ -17,27 +17,45 @@ def get_month_string(month):
     return CONSTANT.MONTHS[month]
 
 def get_data_format(format_code = 1):
-    format = ['city','passenger_count','total_expense']
+    if format_code == 1 or format_code == 2:
+        format = ['city','passenger_count','total_expense','Business Class','Economy','First Class','Premium Economy']
+    elif format_code == 3 or format_code == 4:
+        format = ['city','passenger_count','total_expense','average_cost_per_passenger','Business Class','Economy','First Class','Premium Economy']
+    elif format_code == 5 or format_code == 6:
+        format = ['city','passenger_count','total_expense','Business Class','Economy','First Class','Premium Economy']
+    elif format_code == 15 or format_code == 16:
+        format = ['city','passenger_count','average_cost_per_passenger','Business Class','Economy','First Class','Premium Economy']
     return format
 
+def getlatlng(city,latlng):
+    city = city.lower()
+    if city in CONSTANT.PROB_CITIES:
+        city = CONSTANT.PROB_CITIES[city]
+    else:
+        city = city.title()
+    return latlng[city]
 # Format code is 1 for the first four and 2 for the last 4
-def parse_dataframe(file_path,city,month,format_code = 1):
+def parse_dataframe(file_path,city,month,latlng, format_code = 1):
     response_dict = {}
     if city != None:
         response_dict['source'] = city
+        response_dict['source_latlng'] = getlatlng(city,latlng)
     response_dict['month'] = month
     dataframe = read_pickle(file_path)
     format = get_data_format(format_code)
+    print(dataframe,flush=True)
     city_list = []
     for index, row in dataframe.iterrows():
         city_data = {}
         for col in format:
             city_data[col] = row[col]
+            if col == 'city':
+                city_data['latlng'] = getlatlng(row[col],latlng)
         city_list.append(city_data)
     response_dict['data'] = city_list
     return response_dict
-    
-def read_data(query,city = None, month = None):
+
+def read_data(query, latlng, city = None, month = None):
     query_number = get_query_number(query)
     month = get_month_string(month)
     file_name = month + '.sav'
@@ -45,4 +63,4 @@ def read_data(query,city = None, month = None):
         file_name = city + '_in_' + file_name
     folder_number = query_number % 10
     file_path = CONSTANT.VISUALIZATION_FOLDER + str(folder_number) + "/" + file_name
-    return parse_dataframe(file_path,city,month)
+    return parse_dataframe(file_path,city,month, latlng, query_number)
