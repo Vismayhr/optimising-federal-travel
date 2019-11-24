@@ -9,35 +9,39 @@ replace_remain_cities = {
     "From":{
         'GRP EXP CDN YVR': "Vancouver",
         'WEYBURN SASK': "Weyburn",
-        'TORONTO DTOWN': "Toronto",
+        'TORONTO  DTOWN': "Toronto",
         'Southn Lake': "South Lake",
-        "Wha Ti": "WhaTi"
+        "Wha Ti": "WhaTi",
+        "Wunnummin Lake": "Kenora",
+        "PITTS MEADOW  BC": "Pitts Meadow"
         },
     "To":{
         'GRP EXP CDN YVR': "Vancouver",
         'WEYBURN SASK': "Weyburn",
-        'TORONTO DTOWN': "Toronto",
+        'TORONTO  DTOWN': "Toronto",
         'Southn Lake': "South Lake",
-        "Wha Ti": "WhaTi"
+        "Wha Ti": "WhaTi",
+        "Wunnummin Lake": "Kenora",
+        "PITTS MEADOW  BC": "Pitts Meadow"
     }}
 if __name__ == "__main__":
-	# Generic object to clean the given columns
-	col_names_to_clean = {
-    	"num_of_tickets": "Sum of Net Tickets",
-    	"total_cost": "Sum of Total $"
-		}
-	# Column names to be stripped of spaces
-	col_names_to_strip = ['Major Class', 'Month of Travel Date', 'From', 'To']
-	# Read excel to get raw df
-	raw_df = pd.read_excel("../data/government_dataset.xlsx", skiprows=2)
-	# Produce the clean df from raw df
-	clean_df = clean_dataframe(raw_df, col_names_to_clean)
-	# Drop the last row
-	clean_df = clean_df.loc[:clean_df.shape[0]-2, :]
-	# Strip the columns in df
-	for each_col in col_names_to_strip:
-    	clean_df[each_col] = clean_df[each_col].apply(strip_spaces)
+    # Generic object to clean the given columns
+    col_names_to_clean = {
+    "num_of_tickets": "Sum of Net Tickets",
+    "total_cost": "Sum of Total $"
+    }
+    # Column names to be stripped of spaces
+    col_names_to_strip = ['Major Class', 'Month of Travel Date', 'From', 'To']
+    # Read excel to get raw df
+    raw_df = pd.read_excel("../data/government_dataset.xlsx", skiprows=2)
+    # Produce the clean df from raw df
+    clean_df = clean_dataframe(raw_df, col_names_to_clean)
+    # Drop the last row
+    clean_df = clean_df.loc[:clean_df.shape[0]-2, :]
+    # Strip the columns in df
+    for each_col in col_names_to_strip:
+        clean_df[each_col] = clean_df[each_col].apply(strip_spaces)
     # Replace erroneous city names
     clean_df = clean_df.replace(replace_remain_cities)
-	# Write clean df onto CSV
-	clean_df.to_csv("../data/cleaned_government_data.csv", index=False)
+    # Write clean df onto CSV
+    clean_df.to_csv("../data/cleaned_government_data.csv", index=False)
