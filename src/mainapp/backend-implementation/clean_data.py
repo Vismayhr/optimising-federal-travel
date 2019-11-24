@@ -4,7 +4,22 @@ import pandas as pd
 clean_dataframe = lambda raw_df, col_names_to_clean: raw_df[(raw_df[col_names_to_clean["num_of_tickets"]]>0)&(raw_df[col_names_to_clean["total_cost"]]>0)].reset_index().drop("index", axis=1)
 # Function to strip spaces
 strip_spaces = lambda x: x.strip()
-
+# Replace cities
+replace_remain_cities = {
+    "From":{
+        'GRP EXP CDN YVR': "Vancouver",
+        'WEYBURN SASK': "Weyburn",
+        'TORONTO DTOWN': "Toronto",
+        'Southn Lake': "South Lake",
+        "Wha Ti": "WhaTi"
+        },
+    "To":{
+        'GRP EXP CDN YVR': "Vancouver",
+        'WEYBURN SASK': "Weyburn",
+        'TORONTO DTOWN': "Toronto",
+        'Southn Lake': "South Lake",
+        "Wha Ti": "WhaTi"
+    }}
 if __name__ == "__main__":
 	# Generic object to clean the given columns
 	col_names_to_clean = {
@@ -22,5 +37,7 @@ if __name__ == "__main__":
 	# Strip the columns in df
 	for each_col in col_names_to_strip:
     	clean_df[each_col] = clean_df[each_col].apply(strip_spaces)
+    # Replace erroneous city names
+    clean_df = clean_df.replace(replace_remain_cities)
 	# Write clean df onto CSV
 	clean_df.to_csv("../data/cleaned_government_data.csv", index=False)
